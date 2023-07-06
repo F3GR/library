@@ -6,7 +6,7 @@ body {
     gap: 3rem;
 }
 
-body > * {
+header, main, aside {
     display: grid;
     padding: 2rem;
 }
