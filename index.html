@@ -7,24 +7,82 @@
 	<meta name="description" content="Personal portfolio" />
 	<link href="./reset.css" rel="stylesheet" />
 	<link href="./style.css" rel="stylesheet" />
+	<script src="./sourceCode.js"></script>
 	<title>Library</title>
 </head>
 <body>
 	<header>
-	<nav>
-		<ul></ul>
-	</nav>
+		<h1>LIBRARY</h1>
 	</header>
 	<main>
-		<aside class="left"></aside>
-		<article>
-			<section></section>
-			<section></section>
-			<section></section>
-		</article>
-		<aside class="right"></aside>
+		<table>
+			<thead>
+				<tr>
+				  <th class="title">Book</th>
+				  <th class="author">Author</th>
+				  <th class="pages">Number of pages</th>
+				  <th class="read-status">Reading status</th>
+				  <th class="edit">Edit</th>
+				</tr>
+			  </thead>
+			  <tbody>
+				<tr class="row" data-number="1">
+					<td class="title">Example</td>
+					<td class="author">Noone</td>
+					<td class="pages">1</td>
+					<td class="read-box">
+						<select id='read-status' name='read-status'>
+						  <option value='true'>Read</option>
+						  <option value='false'>Unread</option>
+						</select>
+					</td>
+					<td class="options">
+						<button class="edit">Edit</button>
+						<button class="delete">Delete</button>
+					</td>
+				</tr>
+				<tr class="row" data-number="1">
+					<td class="title">Example</td>
+					<td class="author">Noone</td>
+					<td class="pages">1</td>
+					<td class="read-box">
+						<select id='read-status' name='read-status'>
+						  <option value='true'>Read</option>
+						  <option value='false'>Unread</option>
+						</select>
+					</td>
+					<td class="options">
+						<button class="edit">Edit</button>
+						<button class="delete">Delete</button>
+					</td>
+				</tr>
+			  </tbody>
+		</table>
 	</main>
-	<footer></footer>
-	<script></script>
+	<aside>
+		<form>
+			<h2>New book</h2>
+			  <div>
+				<label for="title">Book title: </label>
+				<input id="title" name="title" type="text" required />
+			  </div>
+			  <div>
+				<label for="author">Author of the book: </label>
+				<input id="author" name="author" type="text" required />
+			  </div>
+			  <div>
+				<label for="pages">Number of pages: </label>
+				<input id="pages" name="pages" type="number" required />
+			  </div>
+			  <div>
+				<label for="read-status">Read or not: </label>
+				<select id='read-status' name='read-status' required>
+					<option value='true'>Read</option>
+					<option value='false'>Unread</option>
+				</select>
+			  </div>
+			  <button>Add</button>
+		  </form>
+	</aside>
 </body>
 </html>

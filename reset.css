@@ -113,7 +113,7 @@ input {
   padding: 0;
 }
 
- // do I need this? - CHECK //
+ /* do I need this? - CHECK */
 input[type="checkbox"] {
   -webkit-appearance: none;
   appearance: none;
@@ -166,23 +166,18 @@ meter {
   margin: 0;
   box-sizing: border-box;
   width: 100%;
-  padding: 5px;
-  height: 30px;
+  padding: 0.5rem;
 }
 
-select {
-  appearance: none;
-}
-
-input[type="text"],
+/*input[type="text"],
 input[type="datetime-local"],
 input[type="color"],
 select {
   box-shadow: inset 1px 1px 3px #ccc;
   border-radius: 5px;
-}
+}*/
 
-// Browser compatibility fix //
+/* Browser compatibility fix
 <label for="select">Select a fruit</label>
 <div class="select-wrapper">
   <select id="select" name="select">
@@ -190,8 +185,8 @@ select {
     <option>Cherry</option>
     <option>Lemon</option>
   </select>
-</div>
-.select-wrapper {
+</div>*/
+/*.select-wrapper {
   position: relative;
 }
 .select-wrapper::after {
@@ -200,13 +195,13 @@ select {
   top: 6px;
   right: 10px;
   position: absolute;
-}
+}*/
 
-// !!!Browser compatibility with multiple selections!!! //
+/*Browser compatibility with multiple selections!!! //
 <label for="select">Select fruits</label>
 <select id="select" name="select" multiple>
   …
-</select>
+</select>*/
 
 
 input[type="range"] {
