@@ -59,6 +59,10 @@ td, th {
     border: 1px solid whitesmoke;
 }
 
+td[contenteditable='true'] {
+    border: 5px solid bisque;
+}
+
 tr > td:nth-child(4) {
     text-align: center;
 }
