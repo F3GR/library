@@ -63,10 +63,10 @@ th:last-of-type {
 }
 
 td, th {
-    border: 1px solid whitesmoke;
+    border: 2px solid whitesmoke;
 }
 
-td[contenteditable='true'] {
+td[contenteditable='true'], td.editable {
     border: 5px solid bisque;
     max-width: 15rem;
     max-height: 15rem;

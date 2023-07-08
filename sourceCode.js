@@ -11,16 +11,21 @@ const submitPages = document.querySelector('form #pages');
 const submitStatus = document.querySelector('form #read');
 
 let myLibrary = [];
+let originalTitles = new Map();
+let originalAuthors = new Map();
 
-function Book(title, author, pages, read) {
-    this.title = title;
-    this.author = author;
-    this.pages = pages;
-    this.read = read;
+class Book {
+    constructor(title, author, pages, read, id) {
+        this.title = title;
+        this.author = author;
+        this.pages = pages;
+        this.read = read;
+        this.id = id;
+    }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    let exampleBook = new Book('foo', 'fooer', 100, 'read');
+    let exampleBook = new Book('Example', 'NewAuthor', 100, 'read', 0);
     myLibrary.push(exampleBook);
 
     for (let i = 0; i < myLibrary.length; i++) {
@@ -34,41 +39,27 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
-function updateLibrary(row, book) {
-    const titleCell = row.querySelector('.title');
-    const authorCell = row.querySelector('.author');
-    const pagesCell = row.querySelector('.pages');
-    const statusSelect = row.querySelector('#read-status');
-  
-    titleCell.textContent = book.title;
-    authorCell.textContent = book.author;
-    pagesCell.textContent = book.pages;
-    statusSelect.value = book.read;
-}
-
 selectedSubmit.addEventListener('click', function(e) {
     e.preventDefault();
-    let object = new Book(submitTitle.value, submitAuthor.value, 
-        submitPages.value, submitStatus.value);
-    myLibrary.push(object);
-    submitTitle.value = '';
-    submitAuthor.value = '';
-    submitPages.value = "";
+    let newBook = new Book(submitTitle.value, submitAuthor.value, 
+        submitPages.value, submitStatus.value, (myLibrary.length + 1));
 
-    const newRow = createRow(myLibrary);
-    newRow.querySelector('.title').textContent = object.title;
-    newRow.querySelector('.author').textContent = object.author;
-    newRow.querySelector('.pages').textContent = object.pages;
-    newRow.querySelector('#read-status').value = object.read;
-    document.querySelector('tbody').appendChild(newRow);
+    if (!ifDuplicate(newBook, myLibrary)) {
+        myLibrary.push(newBook);
+        submitTitle.value = '';
+        submitAuthor.value = '';
+        submitPages.value = "";
+    
+        const newRow = createRow(myLibrary);
+        newRow.querySelector('.title').textContent = newBook.title;
+        newRow.querySelector('.author').textContent = newBook.author;
+        newRow.querySelector('.pages').textContent = newBook.pages;
+        newRow.querySelector('#read-status').value = newBook.read;
+        document.querySelector('tbody').appendChild(newRow);
+    } else {
+        alert('This book was already added!');
+    }
 });
-
-function updateTable(rows) {
-    rows.forEach((row, index) => {
-      const book = myLibrary[index];
-      updateLibrary(row, book);
-    });
-}
 
 function createRow(array) {
     const newRow = document.createElement('tr');
@@ -79,27 +70,9 @@ function createRow(array) {
     titleCell.classList.add('title');
     newRow.appendChild(titleCell);
 
-    titleCell.addEventListener('focusout', function() {
-        const selectedRow = titleCell.closest('tr');
-        const dataIndex = parseInt(selectedRow.getAttribute('data-number'));
-
-        if (titleCell.textContent !== myLibrary[dataIndex].title) {
-            myLibrary[dataIndex].title = titleCell.textContent;
-        }
-    });
-  
     const authorCell = document.createElement('td');
     authorCell.classList.add('author');
     newRow.appendChild(authorCell);
-
-    authorCell.addEventListener('focusout', function() {
-        const selectedRow = authorCell.closest('tr');
-        const dataIndex = parseInt(selectedRow.getAttribute('data-number'));
-
-        if (authorCell.textContent !== myLibrary[dataIndex].author) {
-            myLibrary[dataIndex].author = authorCell.textContent;
-        }
-    });
   
     const pagesCell = document.createElement('td');
     pagesCell.classList.add('pages');
@@ -142,7 +115,6 @@ function createRow(array) {
     unreadOption.value = 'unread';
     unreadOption.textContent = 'Unread';
     statusSelect.appendChild(unreadOption);
-    
 
     const optionsCell = document.createElement('td');
     optionsCell.classList.add('options');
@@ -157,17 +129,42 @@ function createRow(array) {
         const selectedRow = editButton.closest('tr');
         const selectedStatus = selectedRow.querySelector('#read-status');
         const textCells = selectedRow.querySelectorAll('td:not(.options):not(.read-box)');
+        const dropMenuCell = selectedRow.querySelector('td.read-box');
+        const dataIndex = parseInt(selectedRow.getAttribute('data-number'));
 
         if (selectedStatus.hasAttribute('disabled')) {
+            originalTitles.set(selectedRow.getAttribute('data-number'), selectedRow.querySelector('.title').textContent);
+            originalAuthors.set(selectedRow.getAttribute('data-number'), selectedRow.querySelector('.author').textContent);
+
+            dropMenuCell.classList.add('editable');
             selectedStatus.removeAttribute('disabled');
             textCells.forEach(cell => {
                 cell.setAttribute('contenteditable', 'true');
               });
         } else {
-            selectedStatus.setAttribute('disabled', 'disabled');
-            textCells.forEach(cell => {
-                cell.removeAttribute('contenteditable');
-              });
+            const editedTitle = selectedRow.querySelector('.title').textContent;
+            const editedAuthor = selectedRow.querySelector('.author').textContent;
+            const editedBook = new Book(editedTitle, editedAuthor, 0, 'read');
+            const id = myLibrary[selectedRow.getAttribute('data-number')].id;
+
+            if (ifDuplicate(editedBook, myLibrary, id)) {
+                alert('This book was already added!');
+                selectedRow.querySelector('.title').textContent = originalTitles.get(selectedRow.getAttribute('data-number'));
+                selectedRow.querySelector('.author').textContent = originalAuthors.get(selectedRow.getAttribute('data-number'));
+            } else {
+                selectedRow.querySelector('.title').textContent = editedTitle;
+                selectedRow.querySelector('.author').textContent = editedAuthor;
+                myLibrary[selectedRow.getAttribute('data-number')].title = editedTitle;
+                myLibrary[selectedRow.getAttribute('data-number')].author = editedAuthor;
+
+                originalTitles.delete(selectedRow.getAttribute('data-number'));
+                originalAuthors.delete(selectedRow.getAttribute('data-number'));
+                dropMenuCell.classList.remove('editable');
+                selectedStatus.setAttribute('disabled', 'disabled');
+                textCells.forEach(cell => {
+                    cell.removeAttribute('contenteditable');
+                });
+            }
         }
     });
 
@@ -181,11 +178,16 @@ function createRow(array) {
         const dataIndex = parseInt(selectedRow.getAttribute('data-number'));
         selectedRow.remove();
         myLibrary.splice(dataIndex, 1);
-        updateTable(selectedRows);
     });
   
     return newRow;
 }
 
-updateTable(selectedRows);
-
+function ifDuplicate(book, library, currentRowIndex) {
+    for (let i = 0; i < library.length; i++) {
+        if (library[i].id !== currentRowIndex && library[i].title === book.title && library[i].author === book.author) {
+            return true;
+        }
+    }
+    return false;
+}
